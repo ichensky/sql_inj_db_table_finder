@@ -6,7 +6,7 @@
 
 # Commentary:
 
-# Decode illuminati cipher
+# Simle post attack
 
 # License:
 
