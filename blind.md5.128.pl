@@ -6,7 +6,7 @@
 
 # Commentary:
 
-# Decode illuminati cipher
+# Blind md5 in 128 attemps
 
 # License:
 
