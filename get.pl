@@ -6,7 +6,7 @@
 
 # Commentary:
 
-# Decode illuminati cipher
+# Get databases/tables
 
 # License:
 
